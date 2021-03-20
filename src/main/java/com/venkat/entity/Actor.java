@@ -2,6 +2,7 @@ package com.venkat.entity;
 
 import javax.persistence.*;
 
+
 @Entity
 @Table(name="actor")
 public class Actor {

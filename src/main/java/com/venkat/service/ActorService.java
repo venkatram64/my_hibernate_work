@@ -4,8 +4,11 @@ import com.venkat.entity.Actor;
 import com.venkat.util.HibernateUtil;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.procedure.ProcedureCall;
+import org.hibernate.procedure.ProcedureOutputs;
 import org.hibernate.query.Query;
 
+import javax.persistence.ParameterMode;
 import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 
@@ -50,5 +53,16 @@ public class ActorService {
         session.beginTransaction();
         session.delete(actor);
         session.getTransaction().commit();
+    }
+
+    public Integer getFilmFromStock(int filmId, int storeId){
+        Session session = getSession();
+        ProcedureCall query = session.createStoredProcedureCall("film_in_stock");
+        query.registerParameter("p_film_id", Integer.class, ParameterMode.IN).bindValue(filmId);
+        query.registerParameter("p_store_id", Integer.class, ParameterMode.IN).bindValue(storeId);
+        query.registerParameter("p_film_count", Integer.class, ParameterMode.OUT);
+        ProcedureOutputs procedureOutputs = query.getOutputs();
+        Integer count = (Integer)procedureOutputs.getOutputParameterValue("p_film_count");
+        return count;
     }
 }
